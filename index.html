@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Announcements | The Light Park</title>
+  <style>
+    :root {
+      --bg: #0B0D14;
+      --surface: #12151F;
+      --surface2: #1a1e2e;
+      --border: #2a2f42;
+      --text: #f0f0f5;
+      --text-dim: #8888a0;
+      --purple: #a855f7;
+      --teal: #06d6a0;
+      --pink: #ff4fd8;
+      --green: #22c55e;
+      --orange: #f97316;
+      --blue: #3b82f6;
+      --red: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      padding: 20px;
+      text-align: center;
+    }
+    .header h1 { font-size: 24px; font-weight: 800; }
+    
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    
+    /* Compose */
+    .compose-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .compose-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .btn {
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 15px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: white;
+      width: 100%;
+    }
+    
+    /* Audience Chips */
+    .audience-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 8px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chip:hover { border-color: var(--purple); }
+    .chip.selected {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: white;
+    }
+    
+    /* Announcements List */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    
+    .announcement {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .announcement.urgent {
+      border-color: var(--red);
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .announcement.important {
+      border-color: var(--orange);
+    }
+    .announcement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .announcement-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .announcement-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .announcement-author { font-weight: 600; }
+    .announcement-time { font-size: 12px; color: var(--text-dim); }
+    .announcement-badge {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-urgent { background: var(--red); color: white; }
+    .badge-important { background: var(--orange); color: white; }
+    .badge-info { background: var(--blue); color: white; }
+    .badge-venue { background: var(--teal); color: #000; }
+    
+    .announcement-content {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .announcement-audience {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .audience-tag {
+      padding: 4px 10px;
+      background: var(--surface2);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    
+    .reactions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .reaction {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: var(--surface2);
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .reaction:hover { background: var(--border); }
+    .reaction.active { background: rgba(168, 85, 247, 0.2); }
+    
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📢 Staff Announcements</h1>
+  </div>
+  
+  <div class="container">
+    <div class="compose-card">
+      <div class="compose-title">✏️ New Announcement</div>
+      
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="messageText" placeholder="Type your announcement..."></textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="priority">
+            <option value="info">ℹ️ Info</option>
+            <option value="important">⚠️ Important</option>
+            <option value="urgent">🚨 Urgent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Venue</label>
+          <select id="venue">
+            <option value="all">🌐 All Venues</option>
+            <option value="katy">Katy</option>
+            <option value="spring">Spring</option>
+            <option value="selma">Selma</option>
+            <option value="missions">Missions</option>
+            <option value="arlington">Arlington</option>
+            <option value="frisco">Frisco</option>
+            <option value="round-rock">Round Rock</option>
+            <option value="okc">Oklahoma City</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Send To</label>
+        <div class="audience-chips">
+          <div class="chip selected" onclick="toggleChip(this)" data-role="all">👥 Everyone</div>
+          <div class="chip" onclick="toggleChip(this)" data-role="tent">🎪 Tent Staff</div>
+          <div class="chip" onclick="toggleChip(this)" data-role="gate">🚗 Gate/Parking</div>
+          <div class="chip" onclick="toggleChip(this)" data-role="tech">⚡ Techs</div>
+          <div class="chip" onclick="toggleChip(this)" data-role="manager">👔 Managers</div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="sendAnnouncement()">📤 Send Announcement</button>
+    </div>
+    
+    <div class="section-title">📋 Recent Announcements</div>
+    
+    <div class="announcement urgent">
+      <div class="announcement-header">
+        <div class="announcement-meta">
+          <div class="announcement-avatar">BD</div>
+          <div>
+            <div class="announcement-author">Bob Dodge</div>
+            <div class="announcement-time">Today 8:30 PM</div>
+          </div>
+        </div>
+        <span class="announcement-badge badge-urgent">🚨 Urgent</span>
+      </div>
+      <div class="announcement-content">
+        <strong>Weather Alert:</strong> Rain expected in 30 minutes. All tent staff prepare tarps. Techs be ready to cover sensitive equipment. Gates may pause briefly if lightning detected.
+      </div>
+      <div class="announcement-audience">
+        <span class="audience-tag">👥 All Staff</span>
+        <span class="audience-tag">📍 Katy</span>
+      </div>
+      <div class="reactions">
+        <div class="reaction active">👍 12</div>
+        <div class="reaction">✅ 8</div>
+        <div class="reaction">❓ 2</div>
+      </div>
+    </div>
+    
+    <div class="announcement important">
+      <div class="announcement-header">
+        <div class="announcement-meta">
+          <div class="announcement-avatar">MG</div>
+          <div>
+            <div class="announcement-author">Maria Garcia</div>
+            <div class="announcement-time">Today 6:15 PM</div>
+          </div>
+        </div>
+        <span class="announcement-badge badge-important">⚠️ Important</span>
+      </div>
+      <div class="announcement-content">
+        We're running low on Blitzen Bundles. If you're at the restocking station, please bring another box to Tent A. Great sales tonight team! 🎉
+      </div>
+      <div class="announcement-audience">
+        <span class="audience-tag">🎪 Tent Staff</span>
+        <span class="audience-tag">📍 Katy</span>
+      </div>
+      <div class="reactions">
+        <div class="reaction">👍 5</div>
+        <div class="reaction active">✅ 3</div>
+      </div>
+    </div>
+    
+    <div class="announcement">
+      <div class="announcement-header">
+        <div class="announcement-meta">
+          <div class="announcement-avatar">BD</div>
+          <div>
+            <div class="announcement-author">Bob Dodge</div>
+            <div class="announcement-time">Today 5:00 PM</div>
+          </div>
+        </div>
+        <span class="announcement-badge badge-info">ℹ️ Info</span>
+      </div>
+      <div class="announcement-content">
+        Welcome to opening night everyone! 🎄 Let's make some magic tonight. Remember: smile, have fun, and make every family feel special. If you need anything, your managers are on radio. LET'S GO! 💪
+      </div>
+      <div class="announcement-audience">
+        <span class="audience-tag">👥 All Staff</span>
+        <span class="audience-tag">🌐 All Venues</span>
+      </div>
+      <div class="reactions">
+        <div class="reaction active">🎉 45</div>
+        <div class="reaction">💪 32</div>
+        <div class="reaction">❤️ 28</div>
+      </div>
+    </div>
+    
+    <div class="announcement">
+      <div class="announcement-header">
+        <div class="announcement-meta">
+          <div class="announcement-avatar">EM</div>
+          <div>
+            <div class="announcement-author">Eddie Martinez</div>
+            <div class="announcement-time">Today 4:30 PM</div>
+          </div>
+        </div>
+        <span class="announcement-badge badge-venue" style="background: var(--teal);">⚡ Tech Update</span>
+      </div>
+      <div class="announcement-content">
+        Gnome section B is back online. Had to replace controller on unit #7. All 240 props now green. We're ready for gates! 🟢
+      </div>
+      <div class="announcement-audience">
+        <span class="audience-tag">⚡ Techs</span>
+        <span class="audience-tag">👔 Managers</span>
+      </div>
+      <div class="reactions">
+        <div class="reaction">👍 8</div>
+        <div class="reaction active">🙌 6</div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function toggleChip(el) {
+      // If clicking "Everyone", deselect others
+      if (el.dataset.role === 'all') {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        return;
+      }
+      
+      // Deselect "Everyone" when selecting specific roles
+      document.querySelector('.chip[data-role="all"]').classList.remove('selected');
+      el.classList.toggle('selected');
+      
+      // If nothing selected, select "Everyone"
+      if (!document.querySelector('.chip.selected')) {
+        document.querySelector('.chip[data-role="all"]').classList.add('selected');
+      }
+    }
+    
+    function sendAnnouncement() {
+      const message = document.getElementById('messageText').value.trim();
+      if (!message) {
+        alert('Please enter a message');
+        return;
+      }
+      
+      const priority = document.getElementById('priority').value;
+      const venue = document.getElementById('venue').value;
+      const roles = Array.from(document.querySelectorAll('.chip.selected')).map(c => c.dataset.role);
+      
+      alert(`📤 Announcement Sent!\n\nMessage: "${message.substring(0, 50)}..."\nPriority: ${priority}\nVenue: ${venue}\nAudience: ${roles.join(', ')}\n\nThis would push to all selected staff's Employee App.`);
+      
+      document.getElementById('messageText').value = '';
+    }
+  </script>
+</body>
+</html>
